@@ -1,0 +1,10 @@
+reason_code,severity,reason,rule
+ORPHAN_HISTORY,reject,History for a worker in neither master extract,the worker (source system and ID) must exist in the worker master
+UNPARSEABLE_DATE,reject,Start or end date cannot be parsed or is impossible,dates must parse in a known source format and exist in the calendar
+END_BEFORE_START,reject,End date before start date,end_date must be on or after start_date
+UNKNOWN_EMPLOYER,reject,Employer code not in the employer reference,employer_code must exist in employers
+DUPLICATE_KEY_CONFLICT,reject,Same worker employer and start date with different details,one row per natural key after removing exact duplicates
+OVERLAP_CONFLICT,reject,Overlapping placements with different employers,a worker holds one placement at a time
+NO_HISTORY,flag,Worker in the master with no placement history,seniority needs at least one placement
+MISSING_BRANCH,flag,Placement without a branch,kept and reported as unassigned
+FUTURE_START,flag,Placement starts after the as-of date,valid but not counted until it starts

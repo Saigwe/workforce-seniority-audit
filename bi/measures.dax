@@ -1,0 +1,43 @@
+// DAX equivalents for a Power BI model over the same marts.
+// Tables: Placement (fct_placement), Worker (dim_worker), Employer (dim_employer), Branch (dim_branch),
+// 'Date' (marked date table, no relationship to Placement: placements are ranges, filtered in the measure).
+
+// Workers with a valid placement covering the last date in the filter context.
+Headcount =
+VAR AsOf = MAX ( 'Date'[Date] )
+RETURN
+    CALCULATE (
+        DISTINCTCOUNT ( Placement[worker_key] ),
+        Placement[valid_from] <= AsOf,
+        Placement[valid_to] >= AsOf
+    )
+
+// Shown only to explain the difference from Headcount.
+Naive Open Rows = CALCULATE ( COUNTROWS ( Placement ), Placement[is_open_ended] = TRUE () )
+
+// Completed months with the month-end rule, per worker at the as-of date.
+Tenure Months =
+VAR AsOf = MAX ( 'Date'[Date] )
+VAR S = SELECTEDVALUE ( Placement[continuous_service_start] )
+VAR M = ( YEAR ( AsOf ) - YEAR ( S ) ) * 12 + MONTH ( AsOf ) - MONTH ( S )
+VAR Adjust = IF ( DAY ( AsOf ) < DAY ( S ) && AsOf <> EOMONTH ( AsOf, 0 ), 1, 0 )
+RETURN
+    IF ( ISBLANK ( S ) || S > AsOf || NOT SELECTEDVALUE ( Worker[has_seniority_evidence] ), BLANK (), M - Adjust )
+
+Headcount With Seniority =
+CALCULATE ( [Headcount], Worker[has_seniority_evidence] = TRUE () )
+
+Insufficient Evidence = [Headcount] - [Headcount With Seniority]
+
+Missing Branch =
+VAR AsOf = MAX ( 'Date'[Date] )
+RETURN
+    CALCULATE (
+        DISTINCTCOUNT ( Placement[worker_key] ),
+        Placement[valid_from] <= AsOf,
+        Placement[valid_to] >= AsOf,
+        Placement[is_missing_branch] = TRUE ()
+    )
+
+// Suppress small cells on any published breakdown.
+Headcount (Published) = IF ( [Headcount] < 5, BLANK (), [Headcount] )

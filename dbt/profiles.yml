@@ -1,0 +1,8 @@
+# Kept in-repo so CI and reviewers can run it. No secrets: DuckDB is a local file.
+workforce_seniority:
+  target: duckdb
+  outputs:
+    duckdb:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_PATH', '../warehouse/workforce.duckdb') }}"
+      threads: 4

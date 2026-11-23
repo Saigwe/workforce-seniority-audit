@@ -1,0 +1,47 @@
+version: 2
+
+models:
+  - name: dim_worker
+    columns:
+      - name: worker_key
+        data_tests: [unique, not_null]
+  - name: dim_branch
+    columns:
+      - name: branch_sk
+        data_tests: [unique, not_null]
+  - name: dim_employer
+    columns:
+      - name: employer_code
+        data_tests: [unique, not_null]
+  - name: fct_placement
+    columns:
+      - name: placement_key
+        data_tests: [unique, not_null]
+      - name: worker_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_worker')
+                field: worker_key
+      - name: employer_code
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_employer')
+                field: employer_code
+  - name: fct_worker_month
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [month_end, worker_key]
+    columns:
+      - name: tenure_band
+        data_tests: [not_null]
+  - name: rpt_rejections
+    columns:
+      - name: reason_code
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [ORPHAN_HISTORY, UNPARSEABLE_DATE, END_BEFORE_START, UNKNOWN_EMPLOYER, DUPLICATE_KEY_CONFLICT, OVERLAP_CONFLICT]

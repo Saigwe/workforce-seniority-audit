@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Parquet files written by generator/simulate.py, as each payroll system delivers them. Every value is synthetic and every column a string, as in the extracts.
+    meta:
+      external_location: "{{ env_var('RAW_DIR', '../data/raw') }}/{name}.parquet"
+    tables:
+      - name: worker_master
+        description: Two extracts of the worker master with the same header and row count (worker_master_a and worker_master_b).
+      - name: placement_history
+        description: One row per placement as delivered; dates in mixed formats, open ends spelt three ways.
+      - name: employers
+      - name: branches
+        description: Branch reference with effective dates (a branch can change region or close).

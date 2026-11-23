@@ -1,0 +1,51 @@
+name: workforce_seniority
+version: 1.0.0
+config-version: 2
+profile: workforce_seniority
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+target-path: target
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  # Demo assumptions. Change one and rerun `make dbt` to see its consequence.
+  as_of: "2026-10-31"            # reporting date: month-end
+  snapshot_from: "2023-01-31"    # first month-end in the monthly snapshot
+  bridge_days: 31                # a gap of up to this many days with the same employer keeps continuous service
+  min_cell: 5                    # breakdowns with fewer workers are suppressed on published pages
+
+models:
+  workforce_seniority:
+    staging:
+      +schema: silver
+      +materialized: table
+    intermediate:
+      +schema: silver
+      +materialized: table
+    marts:
+      +schema: gold
+      +materialized: table
+
+seeds:
+  workforce_seniority:
+    +schema: silver
+    tenure_fixtures:
+      +column_types:
+        case_id: varchar
+        start_date: date
+        as_of_date: date
+        expected_months: integer
+        note: varchar
+    rejection_reasons:
+      +column_types:
+        reason_code: varchar
+        severity: varchar
+        reason: varchar
+        rule: varchar
+
+tests:
+  workforce_seniority:
+    +severity: error

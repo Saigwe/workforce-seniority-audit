@@ -1,0 +1,20 @@
+# Source contracts. Every column arrives as text, as in the payroll extracts; staging types it.
+# tests/test_contracts.py checks every raw file against this: column names and order, string type, grain.
+worker_master:
+  owner: Payroll systems PAY-N and PAY-S (two extracts, same header)
+  grain: [extract_name, source_system, worker_id]
+  columns: [source_system, worker_id, job_family, home_region, record_created, extract_name, extracted_at]
+placement_history:
+  owner: Payroll systems PAY-N and PAY-S
+  grain: [record_id]
+  columns: [record_id, source_system, worker_id, employer_code, branch_code, start_date, end_date, contract_type, fte, extracted_at]
+  date_formats: ["YYYY-MM-DD", "DD/MM/YYYY", "YYYYMMDD", "spreadsheet serial"]
+  open_end_markers: ["", "9999-12-31", "31/12/9999"]
+employers:
+  owner: Client contracts
+  grain: [employer_code]
+  columns: [employer_code, employer_name, sector]
+branches:
+  owner: Client contracts (effective-dated)
+  grain: [branch_code, valid_from]
+  columns: [branch_code, employer_code, branch_name, region, valid_from, valid_to]

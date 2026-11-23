@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: stg_worker_master
+    columns:
+      - name: worker_key
+        data_tests: [unique, not_null]
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [source_system, worker_id]
+  - name: stg_placement_history
+    columns:
+      - name: record_id
+        data_tests: [unique, not_null]
+  - name: stg_employers
+    columns:
+      - name: employer_code
+        data_tests: [unique, not_null]
+  - name: stg_branches
+    columns:
+      - name: branch_sk
+        data_tests: [unique, not_null]

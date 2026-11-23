@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+warehouse/
+data/raw/
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+logs/
+.user.yml
+.env
+dashboards/site/data.json
+dashboards/site/data.js
+dashboards/site/*.html
+.claude/
